@@ -4,15 +4,31 @@
 
 {% block content %}
   <div class="card">
-    <h5 class="card-header">{{ object.title }}</h5>
+    <!-- ヘッダー -->
+    <div class="card-header">
+      <h5>{{ object.title }}</h5>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          &#8942;
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'update-post' object.pk %}">編集する</a></li>
+          <li><a class="dropdown-item" href="{% url 'delete-post' object.pk %}">削除する</a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- 投稿内容 -->
     <div class="card-body">
       <p class="card-text">{{ object.text }}</p>
-      <a href="{% url 'list-post' %}" class="btn btn-primary">一覧へ</a>
-      <a href="{% url 'update-post' object.pk%}" class="btn btn-primary">編集する</a>
-      <a href="{% url 'delete-post' object.pk%}" class="btn btn-primary">削除する</a>
-      <a href="#" class="btn btn-primary">{{ object.choice1 }}</a>
-      <a href="#" class="btn btn-primary">{{ object.choice2 }}</a>
     </div>
-    <small>{{ object.created_at }}</small>
+    <!-- 投票 -->
+    <div class="d-flex gap-2">
+      <a href="#" class="btn btn-primary">
+        {{ object.choice1 }}
+      </a>
+      <a href="#" class="btn btn-primary">
+        {{ object.choice2 }}
+      </a>
+    </div>
   </div>
 {% endblock content %}
