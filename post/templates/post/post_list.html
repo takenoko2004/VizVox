@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}投稿一覧{% endblock %}
+
+{% block content %}
+  {% for item in object_list %}
+  <div class="card">
+    <h5 class="card-header">{{ item.title }}</h5>
+    <div class="card-body">
+      <p class="card-text">{{ item.text }}</p>
+      <a href="#" class="btn btn-primary">{{ item.choice1 }}</a>
+      <a href="#" class="btn btn-primary">{{ item.choice2 }}</a>
+    </div>
+    <a href="{% url 'detail-post' item.pk %}" class="btn btn-primary">詳細へ</a>
+    <small>{{ item.created_at }}</small>
+  </div>
+  {% endfor %}
+{% endblock content %}

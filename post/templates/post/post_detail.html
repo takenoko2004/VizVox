@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}投稿詳細{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h5 class="card-header">{{ object.title }}</h5>
+    <div class="card-body">
+      <p class="card-text">{{ object.text }}</p>
+      <a href="{% url 'list-post' %}" class="btn btn-primary">一覧へ</a>
+      <a href="{% url 'update-post' object.pk%}" class="btn btn-primary">編集する</a>
+      <a href="{% url 'delete-post' object.pk%}" class="btn btn-primary">削除する</a>
+      <a href="#" class="btn btn-primary">{{ object.choice1 }}</a>
+      <a href="#" class="btn btn-primary">{{ object.choice2 }}</a>
+    </div>
+    <small>{{ object.created_at }}</small>
+  </div>
+{% endblock content %}
