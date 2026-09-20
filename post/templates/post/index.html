@@ -3,7 +3,7 @@
 {% block title %}投稿一覧{% endblock %}
 {% block h1 %}投稿一覧{% endblock %}
 
-{% block content %}
+{% block content%}
   {% for item in object_list %}
   <div class="p-4 m-4 bg-light border border-success rounded">
     <a class="text-decoration-none" href="{% url 'detail-post' item.pk %}">
@@ -20,5 +20,5 @@
     </form>
     <small>{{ item.created_at }}</small>
   </div>
-  {% endfor %}
+  {%endfor%}
 {% endblock content %}

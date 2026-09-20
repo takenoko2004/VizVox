@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -33,3 +33,7 @@ class UpdatePostView(UpdateView):
     model = Post
     fields = ('title', 'text', 'choice1', 'choice2')
     success_url = reverse_lazy('list-post')
+
+def index_view(request):
+    object_list = Post.objects.all()
+    return render(request, 'post/index.html', {'object_list': object_list})
