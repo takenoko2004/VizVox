@@ -1,35 +1,30 @@
 {% extends 'base.html' %}
-
-{% block title %}投稿詳細{% endblock %}
-
+{% block title %}{{ object.title }}{% endblock %}
+{% block h1 %}投稿詳細{% endblock %}
 {% block content %}
-  <div class="card">
-    <!-- ヘッダー -->
-    <div class="card-header d-flex align-items-center">
-      <h5>{{ object.title }}</h5>
-      <div class="dropdown">
-        <button class="btn border-0 bg-transparent ms-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          &#8942;
-        </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="{% url 'update-post' object.pk %}">編集する</a></li>
-          <li><a class="dropdown-item" href="{% url 'delete-post' object.pk %}">削除する</a></li>
-        </ul>
-      </div>
+  <div class="p-4 m-4 bg-light border border-success rounded">
+    <div class="d-flex align-items-center">
+    <h2 class="text-success">{{ object.title }}</h2>
+    <div class="dropdown">
+      <button class="btn border-0 bg-transparent ms-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        &#8942;
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="{% url 'update-post' object.pk %}">編集する</a></li>
+        <li><a class="dropdown-item" href="{% url 'delete-post' object.pk %}">削除する</a></li>
+      </ul>
     </div>
-    <!-- 投稿内容 -->
-    <div class="card-body">
-      <p class="card-text">{{ object.text }}</p>
     </div>
-    <!-- 投票 -->
-    <div class="d-flex gap-2">
-      <a href="#" class="btn btn-primary">
+    <p>{{ object.text }}</p>
+    <form method="post" action="#">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">
         {{ object.choice1 }}
-      </a>
-      <a href="#" class="btn btn-primary">
+      </button>
+      <button type="submit" class="btn btn-danger">
         {{ object.choice2 }}
-      </a>
-    </div>
+      </button>
+    </form>
     <small class="text-body-secondary">{{ object.created_at }}</small>
   </div>
 {% endblock content %}
