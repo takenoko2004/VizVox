@@ -4,7 +4,7 @@
 {% block content %}
   <div class="p-4 m-4 bg-light border border-success rounded">
     <div class="d-flex align-items-center">
-    <h2 class="text-success">{{ object.title }}</h2>
+    <p>{{ object.text }}</p>
     <div class="dropdown">
       <button class="btn border-0 bg-transparent ms-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         &#8942;
@@ -15,7 +15,6 @@
       </ul>
     </div>
     </div>
-    <p>{{ object.text }}</p>
     <form method="post" action="#">
       {% csrf_token %}
       <button type="submit" class="btn btn-primary">
@@ -25,6 +24,7 @@
         {{ object.choice2 }}
       </button>
     </form>
+    <a href="{% url 'comment' object.pk %}" class="btn btn-primary mt-2">コメントする</a>
     <small class="text-body-secondary">{{ object.created_at }}</small>
   </div>
 {% endblock content %}
