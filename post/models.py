@@ -7,7 +7,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title
+        return self.text
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -16,3 +16,19 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
+
+class Vote(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    choice = models.IntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['post', 'user'],
+                name='unique_vote'
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.user} - {self.post} - 選択肢{self.choice}'

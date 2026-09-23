@@ -7,7 +7,8 @@ from django.views.generic import (
     DeleteView,
     UpdateView,
     )
-from .models import Post, Comment
+from .models import Post, Comment, Vote
+from django.db.models import Count
 
 class ListPostView(ListView):
     template_name = 'post/post_list.html'
@@ -36,7 +37,47 @@ class UpdatePostView(UpdateView):
 
 def index_view(request):
     object_list = Post.objects.all()
+
+    for post in object_list:
+        post.choice1_count = Vote.objects.filter(
+            post=post,
+            choice=1
+        ).count()
+
+        post.choice2_count = Vote.objects.filter(
+            post=post,
+            choice=2
+        ).count()
+
+        post.total_vote = post.choice1_count + post.choice2_count
+
+        if post.total_vote > 0:
+            post.choice1_percent = round(
+                post.choice1_count / post.total_vote * 100
+            )
+            post.choice2_percent = 100 - post.choice1_percent
+        else:
+            post.choice1_percent = 0
+            post.choice2_percent = 0
+        
+        post.has_voted = Vote.objects.filter(
+            post=post,
+            user=request.user
+        ).exists()
+
     return render(request, 'post/index.html', {'object_list': object_list})
+
+def vote_view(request, pk):
+    post = Post.objects.get(pk=pk)
+    if request.method =='POST':
+        choice = request.POST.get('choice')
+        if not Vote.objects.filter(post=post, user=request.user).exists():
+            Vote.objects.create(
+                post=post,
+                user=request.user,
+                choice=choice
+            )
+    return redirect('index')
 
 class CreateCommentView(CreateView):
     model = Comment

@@ -3,28 +3,52 @@
 {% block h1 %}投稿詳細{% endblock %}
 {% block content %}
   <div class="p-4 m-4 bg-light border border-success rounded">
-    <div class="d-flex align-items-center">
+    <!-- テキスト -->
     <p>{{ object.text }}</p>
-    <div class="dropdown">
-      <button class="btn border-0 bg-transparent ms-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        &#8942;
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="{% url 'update-post' object.pk %}">編集する</a></li>
-        <li><a class="dropdown-item" href="{% url 'delete-post' object.pk %}">削除する</a></li>
-      </ul>
+    <!-- 投票 -->
+    <!-- 投票済み -->
+    {% if object.has_voted %}
+    <div class="row g-2 align-items-stretch">
+      <div class="col-6">
+        <div class="btn btn-primary w-100 py-3 text-white">
+          {{ object.choice1 }}
+          {{ object.choice1_percent }}％
+        </div>
+        <p>{{ object.choice1_count }}票</p>
+      </div>
+      <div class="col-6">
+        <div class="btn btn-danger w-100 py-3 text-white">
+          {{ object.choice2 }}
+          {{ object.choice2_percent }}％
+        </div>
+        <p>{{ object.choice2_count }}票</p>
+        </button>
+      </div>
     </div>
-    </div>
-    <form method="post" action="#">
+    <!-- 未投票 -->
+    {% else %}
+    <form method="post" action="{% url 'vote' object.pk %}">
       {% csrf_token %}
-      <button type="submit" class="btn btn-primary">
-        {{ object.choice1 }}
-      </button>
-      <button type="submit" class="btn btn-danger">
-        {{ object.choice2 }}
-      </button>
+      <div class="row g-2 align-items-stretch">
+        <div class="col-6">
+          <button type="submit" 
+                  name="choice"
+                  value="1" 
+                  class="btn btn-primary w-100 py-3 text-white">
+            {{ object.choice1 }}
+          </button>
+        </div>
+        <div class="col-6">
+          <button type="submit"
+                  name="choice"
+                  value="2"
+                  class="btn btn-danger w-100 py-3 text-white">
+            {{ object.choice2 }}
+          </button>
+        </div>
+      </div>
     </form>
+    {% endif %}
     <a href="{% url 'comment' object.pk %}" class="btn btn-primary mt-2">コメントする</a>
-    <small class="text-body-secondary">{{ object.created_at }}</small>
-  </div>
 {% endblock content %}
+
