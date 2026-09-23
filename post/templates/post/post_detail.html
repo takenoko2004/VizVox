@@ -49,6 +49,9 @@
       </div>
     </form>
     {% endif %}
-    <a href="{% url 'comment' object.pk %}" class="btn btn-primary mt-2">コメントする</a>
+    <div class="text-end">
+      <a href="{% url 'comment' object.pk %}" class="btn btn-primary mt-2">コメントする</a>
+    </div>
+    
 {% endblock content %}
 
