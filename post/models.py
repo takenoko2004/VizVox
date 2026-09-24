@@ -7,6 +7,7 @@ class Post(models.Model):
     choice2 = models.CharField(max_length=100)
     image_choice2 = models.ImageField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.text

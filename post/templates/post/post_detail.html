@@ -3,6 +3,29 @@
 {% block h1 %}投稿詳細{% endblock %}
 {% block content %}
   <div class="p-4 m-4 bg-light border border-success rounded">
+    <!-- 三点メニュー -->
+    <div class="dropdown text-end">
+      <button class="btn border-0 bg-transparent"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+        &#8942;
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <a class="dropdown-item"
+             href="{% url 'update-post' object.pk %}">
+            編集
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+             href="{% url 'delete-post' object.pk %}">
+            削除
+          </a>
+        </li>
+      </ul>
+    </div>
     <!-- テキスト -->
     <p>{{ object.text }}</p>
     <!-- 投票 -->

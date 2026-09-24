@@ -1,3 +1,5 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -10,30 +12,41 @@ from django.views.generic import (
 from .models import Post, Comment, Vote
 from django.db.models import Count
 
-class ListPostView(ListView):
+class ListPostView(LoginRequiredMixin, ListView):
     template_name = 'post/post_list.html'
     model = Post
 
-class DetailPostView(DetailView):
+class DetailPostView(LoginRequiredMixin, DetailView):
     template_name = 'post/post_detail.html'
     model = Post
 
-class CreatePostView(CreateView):
+class CreatePostView(LoginRequiredMixin, CreateView):
     template_name = 'post/post_create.html'
     model = Post
     fields = ('text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
     success_url = reverse_lazy('list-post')
 
-class DeletePostView(DeleteView):
+class DeletePostView(LoginRequiredMixin, DeleteView):
     template_name = 'post/post_confirm_delete.html'
     model = Post
     success_url = reverse_lazy('list-post')
 
-class UpdatePostView(UpdateView):
+class UpdatePostView(LoginRequiredMixin, UpdateView):
     template_name = 'post/post_update.html'
     model = Post
     fields = ('text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
-    success_url = reverse_lazy('list-post')
+    # success_url = reverse_lazy('list-post')
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+
+        if obj.user != self.request.user:
+            raise PermissionDenied
+
+        return obj
+
+    def get_success_url(self):
+        return reverse('detail-book', kwargs={'pk': self.object.id})
 
 def index_view(request):
     object_list = Post.objects.all()
@@ -79,7 +92,7 @@ def vote_view(request, pk):
             )
     return redirect('index')
 
-class CreateCommentView(CreateView):
+class CreateCommentView(LoginRequiredMixin, CreateView):
     model = Comment
     fields = ('post', 'text')
     template_name = 'post/comment_form.html'
