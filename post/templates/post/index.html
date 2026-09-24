@@ -10,6 +10,19 @@
     <a class="text-decoration-none text-dark " href="{% url 'detail-post' item.pk %}">
     <p>{{ item.text }}</p>
     </a>
+    <!-- 画像 -->
+    <div class="row g-2">
+      <div class="col-6">
+        {% if item.image_choice1 %}
+          <img src="{{ item.image_choice1.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice1 }}">
+        {% endif %}
+      </div>
+      <div class="col-6">
+        {% if item.image_choice2 %}
+          <img src="{{ item.image_choice2.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice2 }}">
+        {% endif %}
+      </div>
+    </div>
     <!-- 投票 -->
     <!-- 投票済み -->
     {% if item.has_voted %}

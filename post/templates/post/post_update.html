@@ -3,7 +3,8 @@
 {% block title %}投稿修正{% endblock %}
 
 {% block content %}
-  <form method="post">{% csrf_token %}
+  <form method="post" enctype="multipart/form-data" class="p-4 m-4 
+bg-light border border-success rounded form-group">>{% csrf_token %}
     {{ form.as_p }}
     <button type="submit">修正する</button>
   </form>

@@ -21,7 +21,7 @@ class DetailPostView(DetailView):
 class CreatePostView(CreateView):
     template_name = 'post/post_create.html'
     model = Post
-    fields = ('title', 'text', 'choice1', 'choice2')
+    fields = ('text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
     success_url = reverse_lazy('list-post')
 
 class DeletePostView(DeleteView):
@@ -32,7 +32,7 @@ class DeletePostView(DeleteView):
 class UpdatePostView(UpdateView):
     template_name = 'post/post_update.html'
     model = Post
-    fields = ('title', 'text', 'choice1', 'choice2')
+    fields = ('text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
     success_url = reverse_lazy('list-post')
 
 def index_view(request):

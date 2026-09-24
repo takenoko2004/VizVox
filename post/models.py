@@ -3,7 +3,9 @@ from django.db import models
 class Post(models.Model):
     text = models.TextField()
     choice1 = models.CharField(max_length=100)
+    image_choice1 = models.ImageField(null=True, blank=True)
     choice2 = models.CharField(max_length=100)
+    image_choice2 = models.ImageField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
