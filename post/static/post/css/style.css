@@ -1,3 +1,45 @@
+body {
+    font-family: "Noto Sans JP", sans-serif;
+}
+
 .navbar-basecolor {
     background-color: #7C3AED;
+}
+
+.timeline {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.timeline h5 {
+    font-weight: 700;
+}
+
+.timeline p {
+    font-weight: 400;
+}
+
+.choice1-btn {
+    background-color: #3366CC;
+    color: white;
+    border: none;
+}
+
+.choice1-btn:hover {
+    background-color: #2854A8;
+    color: white;
+    border: none;
+}
+
+.choice2-btn {
+    background-color: #D32F2F;
+    color: white;
+    border: none;
+}
+
+.choice2-btn:hover {
+    background-color: #B71C1C;
+    color: white;
+    border: none;
 }

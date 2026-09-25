@@ -38,16 +38,16 @@
     <!-- 投票 -->
     <!-- 投票済み -->
     {% if item.has_voted %}
-    <div class="row g-0 align-items-stretch">
+    <div class="row g-2 align-items-stretch">
       <div class="col-6">
-        <div class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
+        <div class="btn btn-primary w-100 py-3 text-white">
           {{ item.choice1 }}
           {{ item.choice1_percent }}％
         </div>
         <p>{{ item.choice1_count }}票</p>
       </div>
       <div class="col-6">
-        <div class="btn choice2-btn btn-danger w-100 py-2 rounded-0 rounded-end">
+        <div class="btn btn-danger w-100 py-3 text-white">
           {{ item.choice2 }}
           {{ item.choice2_percent }}％
         </div>

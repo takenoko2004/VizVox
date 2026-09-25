@@ -2,14 +2,14 @@
 {% block title %}{{ object.title }}{% endblock %}
 {% block h1 %}投稿詳細{% endblock %}
 {% block content %}
-  <div class="p-4 m-4 bg-light border border-success rounded">
+  <div class="p-4 bg-light border border-success rounded timeline">
     <!-- 三点メニュー -->
     <div class="dropdown text-end">
       <button class="btn border-0 bg-transparent"
               type="button"
               data-bs-toggle="dropdown"
               aria-expanded="false">
-        &#8942;
+        &#8230;
       </button>
       <ul class="dropdown-menu">
         <li>
@@ -45,7 +45,6 @@
           {{ object.choice2_percent }}％
         </div>
         <p>{{ object.choice2_count }}票</p>
-        </button>
       </div>
     </div>
     <!-- 未投票 -->

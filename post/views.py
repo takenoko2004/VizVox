@@ -23,18 +23,31 @@ class DetailPostView(LoginRequiredMixin, DetailView):
 class CreatePostView(LoginRequiredMixin, CreateView):
     template_name = 'post/post_create.html'
     model = Post
-    fields = ('text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
-    success_url = reverse_lazy('list-post')
+    fields = ('title', 'text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+    
+        return super().form_valid(form)
 
 class DeletePostView(LoginRequiredMixin, DeleteView):
     template_name = 'post/post_confirm_delete.html'
     model = Post
-    success_url = reverse_lazy('list-post')
+    success_url = reverse_lazy('index')
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+
+        if obj.user != self.request.user:
+            raise PermissionDenied
+
+        return obj
 
 class UpdatePostView(LoginRequiredMixin, UpdateView):
     template_name = 'post/post_update.html'
     model = Post
-    fields = ('text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
+    fields = ('title', 'text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
     # success_url = reverse_lazy('list-post')
 
     def get_object(self, queryset=None):
@@ -46,10 +59,12 @@ class UpdatePostView(LoginRequiredMixin, UpdateView):
         return obj
 
     def get_success_url(self):
-        return reverse('detail-book', kwargs={'pk': self.object.id})
+        return reverse('detail-post', kwargs={'pk': self.object.id})
 
 def index_view(request):
-    object_list = Post.objects.all()
+    object_list = Post.objects.annotate(
+        total_vote=Count('votes')
+    ).order_by('-total_vote')
 
     for post in object_list:
         post.choice1_count = Vote.objects.filter(
@@ -61,8 +76,6 @@ def index_view(request):
             post=post,
             choice=2
         ).count()
-
-        post.total_vote = post.choice1_count + post.choice2_count
 
         if post.total_vote > 0:
             post.choice1_percent = round(
@@ -79,6 +92,11 @@ def index_view(request):
         ).exists()
 
     return render(request, 'post/index.html', {'object_list': object_list})
+
+def new_view(request):
+    object_list = Post.objects.all().order_by('-created_at')
+
+    return render(request, 'post/new_post.html', {'object_list': object_list})
 
 def vote_view(request, pk):
     post = Post.objects.get(pk=pk)
