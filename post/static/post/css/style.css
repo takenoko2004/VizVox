@@ -6,10 +6,13 @@ body {
     background-color: #7C3AED;
 }
 
+.sidebar {
+    width: 20%;
+}
+
 .timeline {
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
+    width: 55%;
+    margin-left: 150px;
 }
 
 .timeline h5 {
@@ -42,4 +45,24 @@ body {
     background-color: #B71C1C;
     color: white;
     border: none;
+}
+
+.comment-tabs {
+    display: flex;
+    margin-top: 10px;
+}
+
+.icon-button {
+    width: 40px;
+    height: 40px;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -10px;
+}
+
+.icon-button:hover {
+    background-color: #eee !important;
 }

@@ -1,86 +1,105 @@
 {% extends 'base.html' %}
 
 {% block title %}VizVox{% endblock %}
-{% block h1 %}VizVox{% endblock %}
 
 {% block content%}
-<div class="timeline">
-  <nav class="navbar bg-transparent justify-content-center">
-  <div class="navbar-nav d-flex flex-row">
-    <a class="mx-3 btn btn-primary btn-lg" href="{% url 'index' %}">
-      人気順
-    </a>
-    <a class="mx-3 btn btn-primary btn-lg" href="{% url 'new-post' %}">
-      新着順
-    </a>
-  </div>
-</nav>
-  {% for item in object_list %}
-  <div class="p-2 border-top">
-    <!-- タイトル、テキスト -->
-    <a class="text-decoration-none text-dark " href="{% url 'detail-post' item.pk %}">
-    <h5>{{ item.title }}</h5>
-    <p>{{ item.text }}</p>
-    </a>
-    <!-- 画像 -->
-    <div class="row g-2">
-      <div class="col-6">
-        {% if item.image_choice1 %}
-          <img src="{{ item.image_choice1.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice1 }}">
-        {% endif %}
-      </div>
-      <div class="col-6 text-end">
-        {% if item.image_choice2 %}
-          <img src="{{ item.image_choice2.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice2 }}">
-        {% endif %}
-      </div>
+<div class="d-flex">
+  {% include 'post/components/sidebar.html' %}
+  <div class="timeline">
+    <nav class="navbar bg-transparent justify-content-center">
+    <div class="navbar-nav d-flex flex-row">
+      <a class="mx-3 btn btn-primary btn-lg" href="{% url 'index' %}?sort=popular">
+        人気順
+      </a>
+      <a class="mx-3 btn btn-primary btn-lg" href="{% url 'index' %}?sort=new">
+        新着順
+      </a>
     </div>
-    <!-- 投票 -->
-    <!-- 投票済み -->
-    {% if item.has_voted %}
-    <div class="row g-0 align-items-stretch">
-      <div class="col-6">
-        <div class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
-          {{ item.choice1 }}
-          {{ item.choice1_percent }}％
-        </div>
-        <p>{{ item.choice1_count }}票</p>
-      </div>
-      <div class="col-6">
-        <div class="btn choice2-btn btn-danger w-100 py-2 rounded-0 rounded-end">
-          {{ item.choice2 }}
-          {{ item.choice2_percent }}％
-        </div>
-        <p>{{ item.choice2_count }}票</p>
-      </div>
-    </div>
-    <!-- 未投票 -->
-    {% else %}
-    <form method="post" action="{% url 'vote' item.pk %}">
-      {% csrf_token %}
-      <div class="row g-2 align-items-stretch">
+  </nav>
+    {% for item in object_list %}
+    <div class="py-2 px-4 border-top">
+      <!-- タイトル、テキスト -->
+      <a class="text-decoration-none text-dark " href="{% url 'detail-post' item.pk %}">
+      <h5>{{ item.title }}</h5>
+      <p>{{ item.text }}</p>
+      </a>
+      <!-- 画像 -->
+      <div class="row g-2">
         <div class="col-6">
-          <button type="submit" 
-                  name="choice"
-                  value="1" 
-                  class="btn btn-primary w-100 py-3 text-white">
+          {% if item.image_choice1 %}
+            <img src="{{ item.image_choice1.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice1 }}">
+          {% endif %}
+        </div>
+        <div class="col-6 text-end">
+          {% if item.image_choice2 %}
+            <img src="{{ item.image_choice2.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice2 }}">
+          {% endif %}
+        </div>
+      </div>
+      <!-- 投票 -->
+      <!-- 投票済み -->
+      {% if item.has_voted %}
+      <div class="row g-0 align-items-stretch">
+        <div class="col-6">
+          <div class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
             {{ item.choice1 }}
-          </button>
+            {{ item.choice1_percent }}％
+          </div>
         </div>
         <div class="col-6">
-          <button type="submit"
-                  name="choice"
-                  value="2"
-                  class="btn btn-danger w-100 py-3 text-white">
+          <div class="btn choice2-btn btn-danger w-100 py-2 rounded-0 rounded-end">
             {{ item.choice2 }}
-          </button>
+            {{ item.choice2_percent }}％
+          </div>
         </div>
       </div>
-    </form>
-    {% endif %}
-    <!-- 投稿時刻 -->
-    <small>{{ item.created_at }}</small>
+      <p class="mt-2">{{ item.total_vote }}票</p>
+      <!-- 未投票 -->
+      {% else %}
+      <form method="post" action="{% url 'vote' item.pk %}">
+        {% csrf_token %}
+        <div class="row g-0 align-items-stretch">
+          <div class="col-6">
+            <button type="submit" 
+                    name="choice"
+                    value="1" 
+                    class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
+              {{ item.choice1 }}
+            </button>
+          </div>
+          <div class="col-6">
+            <button type="submit"
+                    name="choice"
+                    value="2"
+                    class="btn choice2-btn btn-danger w-100 py-2 rounded-0 rounded-end">
+              {{ item.choice2 }}
+            </button>
+          </div>
+        </div>
+      </form>
+      {% endif %}
+      <!-- 投稿時刻 -->
+      <small>{{ item.created_at }}</small>
+      <div class="d-flex justify-content-between" style="margin-bottom: -10px;">
+        <a href="{% url 'detail-post' item.pk %}" class="text-dark" style="margin-top: 5px;">
+        <i class="bi bi-chat"></i>
+        </a>
+        <form>
+          <button type="button" class="btn">
+            <i class="bi bi-heart"></i>
+          </button>
+        </form>
+        <form>
+          <button type="button" class="btn">
+            <i class="bi bi-bookmark"></i>
+          </button>
+        </form>
+        <button type="button" class="btn">
+          <i class="bi bi-box-arrow-up"></i>
+        </button>
+      </div>
+    </div>
+    {%endfor%}
   </div>
-  {%endfor%}
 </div>
 {% endblock content %}

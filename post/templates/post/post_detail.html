@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
 {% block title %}{{ object.title }}{% endblock %}
-{% block h1 %}投稿詳細{% endblock %}
 {% block content %}
-  <div class="p-4 bg-light border border-success rounded timeline">
-    <!-- 三点メニュー -->
-    <div class="dropdown text-end">
-      <button class="btn border-0 bg-transparent"
+<div class="d-flex">
+  {% include 'post/components/sidebar.html' %}
+  <div class="timeline">
+    <div class="pb-2 px-4 border-bottom">
+      <div class="d-flex">
+      <!-- 戻るボタン -->
+      <a class="text-dark icon-button" href="{% url 'index' %}">
+        <i class="bi bi-arrow-left fs-5"></i>
+      </a>
+      <!-- 三点メニュー -->
+      <div class="dropdown text-end ms-auto">
+      <button class="btn border-0 bg-transparent icon-button"
               type="button"
               data-bs-toggle="dropdown"
               aria-expanded="false">
-        &#8230;
+        <i class="bi bi-three-dots fs-5"></i>
       </button>
       <ul class="dropdown-menu">
         <li>
@@ -25,54 +32,107 @@
           </a>
         </li>
       </ul>
-    </div>
-    <!-- テキスト -->
-    <p>{{ object.text }}</p>
-    <!-- 投票 -->
-    <!-- 投票済み -->
-    {% if object.has_voted %}
-    <div class="row g-2 align-items-stretch">
-      <div class="col-6">
-        <div class="btn btn-primary w-100 py-3 text-white">
-          {{ object.choice1 }}
-          {{ object.choice1_percent }}％
-        </div>
-        <p>{{ object.choice1_count }}票</p>
       </div>
-      <div class="col-6">
-        <div class="btn btn-danger w-100 py-3 text-white">
-          {{ object.choice2 }}
-          {{ object.choice2_percent }}％
-        </div>
-        <p>{{ object.choice2_count }}票</p>
       </div>
-    </div>
-    <!-- 未投票 -->
-    {% else %}
-    <form method="post" action="{% url 'vote' object.pk %}">
-      {% csrf_token %}
-      <div class="row g-2 align-items-stretch">
+      <!-- タイトル、テキスト -->
+      <h5>{{ object.title }}</h5>
+      <p>{{ object.text }}</p>
+      <!-- 画像 -->
+      <div class="row g-2">
         <div class="col-6">
-          <button type="submit" 
-                  name="choice"
-                  value="1" 
-                  class="btn btn-primary w-100 py-3 text-white">
+          {% if object.image_choice1 %}
+            <img src="{{ object.image_choice1.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice1 }}">
+          {% endif %}
+        </div>
+        <div class="col-6 text-end">
+          {% if object.image_choice2 %}
+            <img src="{{ object.image_choice2.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice2 }}">
+          {% endif %}
+        </div>
+      </div>
+      <!-- 投票 -->
+      <!-- 投票済み -->
+      {% if object.has_voted %}
+      <div class="row g-0 align-items-stretch">
+        <div class="col-6">
+          <div class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
             {{ object.choice1 }}
-          </button>
+            {{ object.choice1_percent }}％
+          </div>
         </div>
         <div class="col-6">
-          <button type="submit"
-                  name="choice"
-                  value="2"
-                  class="btn btn-danger w-100 py-3 text-white">
+          <div class="btn choice2-btn w-100 py-2 rounded-0 rounded-end">
             {{ object.choice2 }}
-          </button>
+            {{ object.choice2_percent }}％
+          </div>
         </div>
       </div>
-    </form>
-    {% endif %}
-    <div class="text-end">
-      <a href="{% url 'comment' object.pk %}" class="btn btn-primary mt-2">コメントする</a>
+      <p class="mt-2">{{ object.total_vote }}票</p>
+      <!-- 未投票 -->
+      {% else %}
+      <form method="post" action="{% url 'vote' object.pk %}">
+        {% csrf_token %}
+        <div class="row g-0 align-items-stretch">
+          <div class="col-6">
+            <button type="submit" 
+                    name="choice"
+                    value="1" 
+                    class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
+              {{ object.choice1 }}
+            </button>
+          </div>
+          <div class="col-6">
+            <button type="submit"
+                    name="choice"
+                    value="2"
+                    class="btn choice2-btn w-100 py-2 rounded-0 rounded-end">
+              {{ object.choice2 }}
+            </button>
+          </div>
+        </div>
+      </form>
+      {% endif %}
+      <small>{{ object.created_at }}</small>
+      <div class="d-flex justify-content-between" style="margin-bottom: -10px;">
+        <a href="{% url 'detail-post' object.pk %}" class="text-dark" style="margin-top: 5px;">
+        <i class="bi bi-chat"></i>
+        </a>
+        <form>
+          <button type="button" class="btn">
+            <i class="bi bi-heart"></i>
+          </button>
+        </form>
+        <form>
+          <button type="button" class="btn">
+            <i class="bi bi-bookmark"></i>
+          </button>
+        </form>
+        <button type="button" class="btn">
+          <i class="bi bi-box-arrow-up"></i>
+        </button>
+      </div>
     </div>
+    <div class="text-end">
+      <a class="btn btn-primary mt-2" href="{% url 'comment' object.pk %}">コメントする</a>
+    </div>
+    <!-- コメント欄 -->
+    <div class="comment-tabs border-bottom">
+      <a href="?choice=all" class="btn btn-secondary m-1 py-1">
+        すべて
+      </a>
+      <a href="?choice=1" class="btn choice1-btn m-1 py-1">
+        {{ object.choice1 }}
+      </a>
+      <a href="?choice=2" class="btn choice2-btn m-1 py-1">
+        {{ object.choice2 }}
+      </a>
+    </div>
+    <div class="px-3 pt-2 mt-1 border-bottom">
+      {% for comment in comments %}
+        <p>{{ comment.text }}</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock content %}
 

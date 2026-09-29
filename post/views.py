@@ -20,6 +20,51 @@ class DetailPostView(LoginRequiredMixin, DetailView):
     template_name = 'post/post_detail.html'
     model = Post
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        post = self.object
+
+        post.choice1_count = Vote.objects.filter(
+            post=post,
+            choice=1
+        ).count()
+
+        post.choice2_count = Vote.objects.filter(
+            post=post,
+            choice=2
+        ).count()
+
+        post.total_vote = post.choice1_count + post.choice2_count
+
+        if post.total_vote > 0:
+            post.choice1_percent = round(
+                post.choice1_count / post.total_vote * 100
+            )
+            post.choice2_percent = 100 - post.choice1_percent
+        else:
+            post.choice1_percent = 0
+            post.choice2_percent = 0
+
+        post.has_voted = Vote.objects.filter(
+            post=post,
+            user=self.request.user
+        ).exists()
+
+        choice = self.request.GET.get('choice')
+
+        comments = Comment.objects.filter(post=post)
+
+        if choice == '1':
+            comments = comments.filter(choice=1)
+
+        elif choice == '2':
+            comments = comments.filter(choice=2)
+
+        context['comments'] = comments
+
+        return context
+
 class CreatePostView(LoginRequiredMixin, CreateView):
     template_name = 'post/post_create.html'
     model = Post
@@ -64,7 +109,14 @@ class UpdatePostView(LoginRequiredMixin, UpdateView):
 def index_view(request):
     object_list = Post.objects.annotate(
         total_vote=Count('votes')
-    ).order_by('-total_vote')
+    )
+
+    sort = request.GET.get('sort')
+
+    if sort == 'new':
+        object_list = object_list.order_by('-created_at')
+    else:
+        object_list = object_list.order_by('-total_vote')
 
     for post in object_list:
         post.choice1_count = Vote.objects.filter(
@@ -93,14 +145,9 @@ def index_view(request):
 
     return render(request, 'post/index.html', {'object_list': object_list})
 
-def new_view(request):
-    object_list = Post.objects.all().order_by('-created_at')
-
-    return render(request, 'post/new_post.html', {'object_list': object_list})
-
 def vote_view(request, pk):
     post = Post.objects.get(pk=pk)
-    if request.method =='POST':
+    if request.method == 'POST':
         choice = request.POST.get('choice')
         if not Vote.objects.filter(post=post, user=request.user).exists():
             Vote.objects.create(
@@ -123,6 +170,15 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+
+        post = Post.objects.get(pk=self.kwargs['post_id'])
+
+        vote = Vote.objects.get(
+            post = post,
+            user = self.request.user
+        )
+
+        form.instance.choice = vote.choice
 
         return super().form_valid(form)
     

@@ -17,6 +17,7 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     text = models.TextField()
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    choice = models.IntegerField()
 
     def __str__(self):
         return self.text
