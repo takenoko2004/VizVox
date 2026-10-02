@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="d-flex">
+  {% include 'post/components/sidebar.html' %}
+  <div class="timeline">
+    <a class="text-dark icon-button" href="{% url 'index' %}">
+      <i class="bi bi-arrow-left fs-5"></i>
+    </a>
+    <div class="d-flex">
+      {% if object.icon %}
+      <img src="{{ object.icon.url }}" class="profile">
+      {% endif %}
+      <h3 class="mx-3">{{ object.user.username }}</h3>
+    </div>
+    <p>{{ object.bio }}</p>
+  </div>
+</div>
+{% endblock content %}

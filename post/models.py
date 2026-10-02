@@ -37,3 +37,15 @@ class Vote(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.post} - 選択肢{self.choice}'
+
+class Like(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['post', 'user'],
+                name='unique_like'
+            )
+        ]

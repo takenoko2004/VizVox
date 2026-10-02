@@ -9,12 +9,8 @@ from django.views.generic import (
     DeleteView,
     UpdateView,
     )
-from .models import Post, Comment, Vote
+from .models import Post, Comment, Vote, Like
 from django.db.models import Count
-
-class ListPostView(LoginRequiredMixin, ListView):
-    template_name = 'post/post_list.html'
-    model = Post
 
 class DetailPostView(LoginRequiredMixin, DetailView):
     template_name = 'post/post_detail.html'
@@ -137,15 +133,20 @@ def index_view(request):
         else:
             post.choice1_percent = 0
             post.choice2_percent = 0
-        
-        post.has_voted = Vote.objects.filter(
-            post=post,
-            user=request.user
-        ).exists()
+
+        if request.user.is_authenticated:
+            post.has_voted = Vote.objects.filter(
+                post=post,
+                user=request.user
+            ).exists()
+        else:
+            post.has_voted = False
 
     return render(request, 'post/index.html', {'object_list': object_list})
 
 def vote_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
     post = Post.objects.get(pk=pk)
     if request.method == 'POST':
         choice = request.POST.get('choice')
@@ -155,6 +156,10 @@ def vote_view(request, pk):
                 user=request.user,
                 choice=choice
             )
+
+    if request.POST.get('next') == 'detail':
+        return redirect('detail-post', pk=post.pk)
+
     return redirect('index')
 
 class CreateCommentView(LoginRequiredMixin, CreateView):
@@ -184,3 +189,27 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
     
     def get_success_url(self):
         return reverse('detail-post', kwargs={'pk': self.object.post.id})
+
+def like_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+
+    post = Post.objects.get(pk=pk)
+
+    like = Like.objects.filter(
+        post=post,
+        user=request.user
+    )
+
+    if like.exists():
+        like.delete()
+    else:
+        Like.objects.create(
+            post=post,
+            user=request.user
+        )
+
+    if request.POST.get('next') == 'detail':
+        return redirect('detail-post', pk=post.pk)
+    
+    return redirect('index')

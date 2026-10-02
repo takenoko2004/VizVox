@@ -74,6 +74,7 @@
         {% csrf_token %}
         <div class="row g-0 align-items-stretch">
           <div class="col-6">
+            <input type="hidden" name="next" value="detail">
             <button type="submit" 
                     name="choice"
                     value="1" 
@@ -82,6 +83,7 @@
             </button>
           </div>
           <div class="col-6">
+            <input type="hidden" name="next" value="detail">
             <button type="submit"
                     name="choice"
                     value="2"
@@ -97,9 +99,12 @@
         <a href="{% url 'detail-post' object.pk %}" class="text-dark" style="margin-top: 5px;">
         <i class="bi bi-chat"></i>
         </a>
-        <form>
-          <button type="button" class="btn">
+        <form method="post" action="{% url 'like' object.pk%}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="detail">
+          <button type="submit" class="btn">
             <i class="bi bi-heart"></i>
+            {{ object.like_set.count }}
           </button>
         </form>
         <form>

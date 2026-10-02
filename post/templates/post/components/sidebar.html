@@ -1,8 +1,9 @@
 <div class="p-2 min-vh-100 border-end">
   <nav class="nav flex-column gap-2">
-    <a class="nav-link text-dark bi bi-house-door" href="{% url 'index' %}">ホーム</a>
-    <a class="nav-link text-dark bi bi-search" href="#">検索</a>
-    <a class="nav-link text-dark bi bi-bookmark-plus" href="#">保存</a>
-    <a class="nav-link text-dark bi bi-plus-square" href="{% url 'create-post' %}">作成</a>
+    <a class="nav-link text-dark bi bi-house-door fs-4" href="{% url 'index' %}"></a>
+    <a class="nav-link text-dark bi bi-search fs-4" href="#"></a>
+    <a class="nav-link text-dark bi bi-bookmark-plus fs-4" href="#"></a>
+    <a class="nav-link text-dark bi bi-people fs-4" href="{% url 'accounts:profile' %}"></a>
+    <a class="nav-link text-dark bi bi-plus fs-4 create-button" href="{% url 'create-post' %}"></a>
   </nav>
 </div>

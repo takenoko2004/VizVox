@@ -11,23 +11,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">  
+  </head>
     <body>
-    <nav class="navbar navbar-dark sticky-top navbar-basecolor">
+    <nav class="navbar navbar-dark sticky-top navbar-basecolor position-relative">
       <div class="navbar-nav d-flex flex-row">
-      <a class="nav-link mx-3" href="{% url 'list-post' %}">投稿一覧</a>
-      <a class="nav-link mx-3" href="{% url 'create-post' %}">投稿作成</a>
+      <a class="mx-3 vizvox-logo" href="{% url 'index' %}">VizVox</a>
       </div>
       <div class="navbar-nav d-flex flex-row">
         {% if request.user.is_authenticated %}
-          <form method="post" action="{% url 'accounts:logout' %}">
-              {% csrf_token %}
-              <button type="submit" class="nav-link mx-3 border-0 bg-transparent">
-                ログアウト
-              </button>
-            </form>
+        <div class="dropdown">
+          <button class="btn border-0 p-0 me-3" data-bs-toggle="dropdown">
+            {% if request.user.profile.icon %}
+              <img src="{{ request.user.profile.icon.url }}" class="navbar-profile">
+            {% endif %}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="{% url 'accounts:profile' %}">プロフィール</a>
+            </li>
+            <li>
+              <form method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item">
+                  ログアウト
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
         {% else %}
-          <a class="nav-link mx-3" href="{% url 'accounts:login' %}">ログイン</a>
-          <a class="nav-link mx-3" href="{% url 'accounts:signup' %}">会員登録</a>
+          <a class="nav-link mx-3 text-dark" href="{% url 'accounts:login' %}">ログイン</a>
+          <a class="nav-link mx-3 text-dark" href="{% url 'accounts:signup' %}">会員登録</a>
         {% endif %}
       </div>
     </nav>
