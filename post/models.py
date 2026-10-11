@@ -18,6 +18,13 @@ class Comment(models.Model):
     text = models.TextField()
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     choice = models.IntegerField()
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='replies'
+    )
 
     def __str__(self):
         return self.text
@@ -47,5 +54,21 @@ class Like(models.Model):
             models.UniqueConstraint(
                 fields=['post', 'user'],
                 name='unique_like'
+            )
+        ]
+
+class Save(models.Model):
+    post = models.ForeignKey(
+        Post, 
+        on_delete=models.CASCADE, 
+        related_name='saves'
+    )
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['post', 'user'],
+                name='unique_save'
             )
         ]

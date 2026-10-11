@@ -10,10 +10,131 @@
     <div class="d-flex">
       {% if object.icon %}
       <img src="{{ object.icon.url }}" class="profile">
+      {% else %}
+      <div class="profile"></div>
       {% endif %}
       <h3 class="mx-3">{{ object.user.username }}</h3>
     </div>
     <p>{{ object.bio }}</p>
-  </div>
+    {% if object.user == request.user %}
+    <div class="d-flex">
+      <a class="btn ms-auto" style="background-color: #5B4AE6; color: white; margin-top: -20px;" href="{% url 'accounts:update-profile' %}">
+        Edit profile
+      </a>
+    </div>
+    {% endif %}
+    <!-- タブ -->
+    <div class="d-flex border-bottom">
+      <a href="?tab=posts" class="flex-fill text-center py-2 text-decoration-none">
+        投稿
+      </a>
+      <a href="?tab=comments" class="flex-fill text-center py-2 text-decoration-none">
+        コメント
+      </a>
+    </div>
+    <!-- 投稿 -->
+    {% if tab == 'posts' %}
+      {% for post in posts %}
+      <div class="border-bottom py-3">
+        <!-- タイトル、テキスト -->
+        <h5>{{ post.title }}</h5>
+        <p>{{ post.text }}</p>
+        <!-- 画像 -->
+        <div class="row g-2">
+          <div class="col-6">
+            {% if post.image_choice1 %}
+              <img src="{{ post.image_choice1.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice1 }}">
+            {% endif %}
+          </div>
+          <div class="col-6 text-end">
+            {% if post.image_choice2 %}
+              <img src="{{ post.image_choice2.url }}" class="img-fluid w-25 rounded mb-2" alt="{{ item.choice2 }}">
+            {% endif %}
+          </div>
+        </div>
+        <!-- 投票 -->
+        <!-- 投票済み -->
+        {% if post.has_voted %}
+        <div class="row g-0 align-items-stretch">
+          <div class="col-6">
+            <div class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
+              {{ post.choice1 }}
+              {{ post.choice1_percent }}％
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="btn choice2-btn w-100 py-2 rounded-0 rounded-end">
+              {{ post.choice2 }}
+              {{ post.choice2_percent }}％
+            </div>
+          </div>
+        </div>
+        <p class="mt-2">{{ post.total_vote }}票</p>
+        <!-- 未投票 -->
+        {% else %}
+        <form method="post" action="{% url 'vote' post.pk %}">
+          {% csrf_token %}
+          <div class="row g-0 align-items-stretch">
+            <div class="col-6">
+              <input type="hidden" name="next" value="detail">
+              <button type="submit" 
+                      name="choice"
+                      value="1" 
+                      class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
+                {{ post.choice1 }}
+              </button>
+            </div>
+            <div class="col-6">
+              <input type="hidden" name="next" value="detail">
+              <button type="submit"
+                      name="choice"
+                      value="2"
+                      class="btn choice2-btn w-100 py-2 rounded-0 rounded-end">
+                {{ post.choice2 }}
+              </button>
+            </div>
+          </div>
+        </form>
+        {% endif %}
+        <small>{{ post.created_at }}</small>
+        <div class="d-flex justify-content-between" style="margin-bottom: -10px;">
+          <a href="{% url 'detail-post' post.pk %}" class="text-dark" style="margin-top: 5px;">
+          <i class="bi bi-chat"></i>
+          </a>
+          <form method="post" action="{% url 'like' post.pk%}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="detail">
+            <button type="submit" class="btn">
+              <i class="bi {% if post.has_liked %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+              {{ post.like_set.count }}
+            </button>
+          </form>
+          <form method="post" action="{% url 'save' post.pk%}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="detail">
+            <button type="submit" class="btn">
+              <i class="bi {% if post.has_saved %}bi-bookmark-fill{% else %}bi-bookmark{% endif %}"></i>
+              {{ post.saves.count }}
+            </button>
+          </form>
+          <button type="button" class="btn">
+            <i class="bi bi-box-arrow-up"></i>
+          </button>
+        </div>
+      </div>
+      {% empty %}
+        <p class="text-muted mt-3">投稿はありません。</p>
+      {% endfor %}
+    <!-- コメント -->
+    {% elif tab == 'comments' %}
+      {% for comment in comments %}
+      <div class="border-bottom py-3">
+        <p>{{ comment.text }}</p>
+      </div>
+      {% empty %}
+      <p class="text-muted mt-3">コメントはありません。</p>
+      {% endfor %}
+    {% endif %}
+    </div>
 </div>
 {% endblock content %}

@@ -15,7 +15,24 @@
     <body>
     <nav class="navbar navbar-dark sticky-top navbar-basecolor position-relative">
       <div class="navbar-nav d-flex flex-row">
-      <a class="mx-3 vizvox-logo" href="{% url 'index' %}">VizVox</a>
+        <a class="mx-3 vizvox-logo" href="{% url 'index' %}">VizVox</a>
+      </div>
+      <div class="navbar-nav d-flex flex-row">
+        <form method="get" action="{% url 'index' %}">
+          <div class="input-group" style="width: 500px; margin-left: -300px;">
+            <input
+              type="text"
+              name="q"
+              class="form-control rounded-start-pill"
+              placeholder="Search"
+              value="{{ request.GET.q|default:'' }}"
+            >
+            <button type="submit" class="btn rounded-end-pill"
+                    style="background-color: #5B4AE6; color: white;">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
       </div>
       <div class="navbar-nav d-flex flex-row">
         {% if request.user.is_authenticated %}
@@ -23,11 +40,13 @@
           <button class="btn border-0 p-0 me-3" data-bs-toggle="dropdown">
             {% if request.user.profile.icon %}
               <img src="{{ request.user.profile.icon.url }}" class="navbar-profile">
+            {% else %}
+              <div class="navbar-profile"></div>
             {% endif %}
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <a class="dropdown-item" href="{% url 'accounts:profile' %}">プロフィール</a>
+              <a class="dropdown-item" href="{% url 'accounts:profile' request.user.pk %}">プロフィール</a>
             </li>
             <li>
               <form method="post" action="{% url 'accounts:logout' %}">
@@ -40,8 +59,8 @@
           </ul>
         </div>
         {% else %}
-          <a class="nav-link mx-3 text-dark" href="{% url 'accounts:login' %}">ログイン</a>
-          <a class="nav-link mx-3 text-dark" href="{% url 'accounts:signup' %}">会員登録</a>
+          <a class="nav-link mx-1 text-dark rounded-pill px-3" style="background-color: #F5F5F5;" href="{% url 'accounts:signup' %}">会員登録</a>
+          <a class="nav-link mx-1 me-3 rounded-pill px-3" style="background-color: #5B4AE6; color: white;" href="{% url 'accounts:login' %}">ログイン</a>
         {% endif %}
       </div>
     </nav>

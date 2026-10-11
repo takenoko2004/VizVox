@@ -6,6 +6,11 @@
   <form method="post" class="p-4 m-4 bg-light border border-success rounded form-group">
     {% csrf_token %}
     <label>{{ post.text }}</label>
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+          <div class="text-danger bi bi-exclamation-triangle">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     <textarea type="text" class="form-control" name="text" rows="3"></textarea>
     <input type="hidden" name="post" value="{{ post.id }}">
     <button type="submit" class="btn btn-success mt-4">コメントを投稿する</button>

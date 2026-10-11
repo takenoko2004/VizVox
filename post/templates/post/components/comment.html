@@ -1,0 +1,70 @@
+<div class="mt-2">
+  <!-- ユーザー情報 -->
+  <div class="d-flex align-items-center mb-1">
+    <a href="{% url 'accounts:profile' comment.user.pk %}" class="text-dark text-decoration-none d-flex align-items-center">
+      {% if comment.choice == 1 %}
+      {% if comment.user.profile.icon %}
+      <img src="{{ comment.user.profile.icon.url }}"
+          class="rounded-circle me-2"
+          width="35"
+          height="35"
+          style="border: 2px solid #5B4AE6;"
+          alt="{{ comment.user.username }}">
+      {% else %}
+      <i class="comment-profile me-2" style="border: 2px solid #5B4AE6;"></i>
+      {% endif %}
+      {% endif %}
+      {% if comment.choice == 2 %}
+      {% if comment.user.profile.icon %}
+      <img src="{{ comment.user.profile.icon.url }}"
+          class="rounded-circle me-2"
+          width="35"
+          height="35"
+          style="border: 2px solid #E04F7F;"
+          alt="{{ comment.user.username }}">
+      {% else %}
+      <i class="comment-profile me-2" style="border: 2px solid #E04F7F;"></i>
+      {% endif %}
+      {% endif %}
+      <span>{{ comment.user.username }}</span>
+    </a>
+    {% if user == comment.user %}
+    <div class="dropdown ms-2">
+      <button class="btn border-0 bg-transparent icon-button"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+        <i class="bi bi-three-dots fs-5"></i>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <a class="dropdown-item"
+              href="{% url 'update-comment' comment.pk %}">
+            編集
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+              href="{% url 'delete-comment' comment.pk %}">
+            削除
+          </a>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  <p style="margin-left: 43px;">{{ comment.text }}</p>
+  <!-- 返信ボタン -->
+  <div style="margin-left: 43px; margin-top: -10px;">
+    <a href="{% url 'comment' object.pk %}?parent={{ comment.pk }}" class="text-dark text-decoration-none">
+      <i class="bi bi-chat"></i>
+      {{ comment.replies.count }}
+    </a>
+  </div>
+  <!-- 返信一覧 -->
+  <div class="reply">
+    {% for reply in comment.replies.all %}
+      {% include 'post/components/comment.html' with comment=reply %}
+    {% endfor %}
+  </div>
+</div>
