@@ -3,6 +3,10 @@ from django.db import models
 class Post(models.Model):
     title = models.CharField(max_length=100)
     text = models.TextField()
+    image1 = models.ImageField(null=True, blank=True)
+    image2 = models.ImageField(null=True, blank=True)
+    image3 = models.ImageField(null=True, blank=True)
+    image4 = models.ImageField(null=True, blank=True)
     choice1 = models.CharField(max_length=100)
     image_choice1 = models.ImageField(null=True, blank=True)
     choice2 = models.CharField(max_length=100)

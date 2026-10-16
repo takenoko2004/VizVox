@@ -177,16 +177,38 @@ class UpdateCommentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse('detail-post', kwargs={'pk': self.object.post.pk})
 
-class CreatePostView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class CreatePostView(LoginRequiredMixin, CreateView):
     template_name = 'post/post_create.html'
     model = Post
-    fields = ('title', 'text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
+    fields = ('title', 'text', 'image1', 'image2', 'image3', 'image4', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
     success_url = reverse_lazy('index')
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        form.fields['title'].widget.attrs['placeholder'] = 'Title'
+        form.fields['text'].widget.attrs['placeholder'] = 'Text'
+
+        return form
+
     def form_valid(self, form):
+        images = self.request.FILES.getlist('images')
+        if len(images) > 4:
+            form.add_error(None, '画像は最大4枚まで添付できます。')
+            return self.form_invalid(form)
+
+        self.object = form.save(commit=False)
+        # form.save(commit=False)でデータベースには保存せずにformの入力内容を使ってPostオブジェクトを作っている
         form.instance.user = self.request.user
+
+        image_fields = ['image1', 'image2', 'image3', 'image4']
+
+        for field_name, image in zip(image_fields, images):
+            setattr(self.object, field_name, image)
+
+        self.object.save()
     
-        return super().form_valid(form)
+        return redirect(self.get_success_url())
 
 class DeletePostView(LoginRequiredMixin, DeleteView):
     template_name = 'post/post_confirm_delete.html'
@@ -204,7 +226,7 @@ class DeletePostView(LoginRequiredMixin, DeleteView):
 class UpdatePostView(LoginRequiredMixin, UpdateView):
     template_name = 'post/post_update.html'
     model = Post
-    fields = ('title', 'text', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
+    fields = ('title', 'text', 'image1', 'image2', 'image3', 'image4', 'choice1', 'choice2', 'image_choice1', 'image_choice2')
     # success_url = reverse_lazy('list-post')
 
     def get_object(self, queryset=None):
@@ -228,7 +250,9 @@ def index_view(request):
     if q:
         object_list = object_list.filter(
             Q(title__icontains=q) |
-            Q(text__icontains=q)
+            Q(text__icontains=q) |
+            Q(choice1__icontains=q) |
+            Q(choice2__icontains=q)
         )
 
     sort = request.GET.get('sort')

@@ -3,9 +3,53 @@
 {% block title %}投稿作成{% endblock %}
 
 {% block content %}
-  <form method="POST" enctype="multipart/form-data" class="p-4 m-4 
-bg-light border border-success rounded form-group">{% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" value="投稿する">
+<div class="create-post">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- title -->
+    <div class="title-area">
+      {{ form.title }}
+    </div>
+    <!-- text -->
+    <div class="text-area">
+      {{ form.text }}
+    </div>
+    <!-- アンケート機能 -->
+    <div class="vox-area">
+      <!-- 画像追加 -->
+      <div class="vox-image-area">
+        <label class="vox-image-button">
+          <i class="bi bi-image"></i>
+          {{ form.image_choice1 }}
+        </label>
+        <label class="vox-image-button">
+          <i class="bi bi-image"></i>
+          {{ form.image_choice2 }}
+        </label>
+      </div>
+      <!-- 選択肢 -->
+      <div class="vox-choice-area">
+        <div class="vox-choice">
+          {{ form.choice1 }}
+          {{ form.choice1.errors }}
+        </div>
+        <div class="vox-choice">
+          {{ form.choice2 }}
+          {{ form.choice2.errors }}
+        </div>
+      </div>
+    </div>
+    <!-- 画像選択 -->
+    <div class="image-upload-area">
+      <label class="image-select-button">
+        <i class="bi bi-image"></i>
+        <input type="file" name="images" id="image-input" accept="image/*" multiple hidden>
+      </label>
+      <small class="image-puload-text">最大4枚</small>
+    </div>
+    <div class="submit-area">
+      <input type="submit" class="submit-button" value="投稿する">
+    </div>
   </form>
+</div>
 {% endblock content %}

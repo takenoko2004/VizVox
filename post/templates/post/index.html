@@ -6,21 +6,22 @@
 <div class="d-flex">
   {% include 'post/components/sidebar.html' %}
   <div class="timeline">
-    <nav class="navbar bg-transparent justify-content-center">
+    <nav class="navbarp-0 sticky-sort-tab navbar-basecolor">
     <div class="navbar-nav d-flex flex-row">
-      <a class="mx-3 btn btn-lg" style="background-color: #5B4AE6; color: white" href="{% url 'index' %}?sort=popular">
-        人気順
+      <a class="mx-3 btn sort-tab {% if request.GET.sort == 'popular' or not request.GET.sort %}active-tab{% endif %}" href="{% url 'index' %}?sort=popular">
+        Top
       </a>
-      <a class="mx-3 btn btn-lg" style="background-color: #5B4AE6; color: white" href="{% url 'index' %}?sort=new">
-        新着順
+      <a class="mx-3 btn sort-tab {% if request.GET.sort == 'new' %}active-tab{% endif %}" href="{% url 'index' %}?sort=new">
+        New
       </a>
     </div>
     </nav>
     {% for item in object_list %}
-    <div class="py-2 px-4 border-top">
+    <div class="py-2 px-4 border-bottom">
       <!-- ユーザー情報 -->
+      <div class="d-flex align-items-center mb-1">
       <a href="{% url 'accounts:profile' item.user.pk %}" class="text-dark text-decoration-none">
-        <div class="d-flex align-items-center mb-1">
+        <div class="d-inline-flex align-items-center mb-1">
         {% if item.user.profile.icon %}
         <img src="{{ item.user.profile.icon.url }}"
             class="rounded-circle me-2"
@@ -32,13 +33,43 @@
         {% endif %}
         <span>{{ item.user.username }}</span>
         </div>
-      </a>
+        </a>
+        <!-- 三点メニュー -->
+        {% if request.user == item.user %}
+        {% include 'post/components/post_menu.html' with post=item %}
+        {% endif %}
+        </div>
       <!-- タイトル、テキスト -->
       <a class="text-decoration-none text-dark" href="{% url 'detail-post' item.pk %}">
       <h5>{{ item.title }}</h5>
       <p>{{ item.text }}</p>
       </a>
       <!-- 画像 -->
+      <div class="post-images 
+          {% if item.image1 and item.image2 and item.image3 and item.image4 %}
+            images-4
+          {% elif item.image1 and item.image2 and item.image3 %}
+            images-3
+          {% elif item.image1 and item.image2 %}
+            images-2
+          {% else %}
+            images-1
+          {% endif %}
+      ">
+        {% if item.image1 %}
+          <img src="{{ item.image1.url }}" alt="投稿画像1">
+        {% endif %}
+        {% if item.image2 %}
+          <img src="{{ item.image2.url }}" alt="投稿画像2">
+        {% endif %}
+        {% if item.image3 %}
+          <img src="{{ item.image3.url }}" alt="投稿画像3">
+        {% endif %}
+        {% if item.image4 %}
+          <img src="{{ item.image4.url }}" alt="投稿画像4">
+        {% endif %}
+      </div>
+      <!-- 選択肢画像 -->
       <div class="row g-2">
         <div class="col-6">
           {% if item.image_choice1 %}
@@ -114,14 +145,16 @@
         <form method="post" action="{% url 'like' item.pk%}">
           {% csrf_token %}
           <button type="submit" class="btn">
-            <i class="bi {% if item.has_liked %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+            <i class="bi {% if item.has_liked %}bi-heart-fill{% else %}bi-heart{% endif %}" 
+              {% if item.has_liked %}style="color: #F91880;"{% endif %}></i>
             {{ item.like_set.count }}
           </button>
         </form>
         <form method="post" action="{% url 'save' item.pk%}">
           {% csrf_token %}
           <button type="submit" class="btn">
-            <i class="bi {% if item.has_saved %}bi-bookmark-fill{% else %}bi-bookmark{% endif %}"></i>
+            <i class="bi {% if item.has_saved %}bi-bookmark-fill{% else %}bi-bookmark{% endif %}"
+              {% if item.has_saved %}style="color: #5B4AE6;"{% endif %}></i>
             {{ item.saves.count }}
           </button>
         </form>

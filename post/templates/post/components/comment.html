@@ -29,28 +29,7 @@
       <span>{{ comment.user.username }}</span>
     </a>
     {% if user == comment.user %}
-    <div class="dropdown ms-2">
-      <button class="btn border-0 bg-transparent icon-button"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false">
-        <i class="bi bi-three-dots fs-5"></i>
-      </button>
-      <ul class="dropdown-menu">
-        <li>
-          <a class="dropdown-item"
-              href="{% url 'update-comment' comment.pk %}">
-            編集
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item"
-              href="{% url 'delete-comment' comment.pk %}">
-            削除
-          </a>
-        </li>
-      </ul>
-    </div>
+    {% include 'post/components/post_menu.html' with post=comment %}
     {% endif %}
   </div>
   <p style="margin-left: 43px;">{{ comment.text }}</p>

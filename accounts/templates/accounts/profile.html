@@ -4,10 +4,10 @@
 <div class="d-flex">
   {% include 'post/components/sidebar.html' %}
   <div class="timeline">
-    <a class="text-dark icon-button" href="{% url 'index' %}">
+    <a class="text-dark icon-button ms-2" href="{% url 'index' %}">
       <i class="bi bi-arrow-left fs-5"></i>
     </a>
-    <div class="d-flex">
+    <div class="d-flex ms-4">
       {% if object.icon %}
       <img src="{{ object.icon.url }}" class="profile">
       {% else %}
@@ -15,7 +15,7 @@
       {% endif %}
       <h3 class="mx-3">{{ object.user.username }}</h3>
     </div>
-    <p>{{ object.bio }}</p>
+    <p class="mt-2 ms-4">{{ object.bio }}</p>
     {% if object.user == request.user %}
     <div class="d-flex">
       <a class="btn ms-auto" style="background-color: #5B4AE6; color: white; margin-top: -20px;" href="{% url 'accounts:update-profile' %}">
@@ -25,21 +25,61 @@
     {% endif %}
     <!-- タブ -->
     <div class="d-flex border-bottom">
-      <a href="?tab=posts" class="flex-fill text-center py-2 text-decoration-none">
-        投稿
+      <a href="?tab=posts" class="flex-fill text-center py-2 text-decoration-none text-dark sort-tab {% if request.GET.tab == 'posts' or not request.GET.tab %}active-tab{% endif %}">
+        Posts
       </a>
-      <a href="?tab=comments" class="flex-fill text-center py-2 text-decoration-none">
-        コメント
+      <a href="?tab=comments" class="flex-fill text-center py-2 text-decoration-none text-dark sort-tab {% if request.GET.tab == 'comments' %}active-tab{% endif %}">
+        Replies
       </a>
     </div>
     <!-- 投稿 -->
     {% if tab == 'posts' %}
       {% for post in posts %}
-      <div class="border-bottom py-3">
+      <div class="py-2 px-4 border-bottom">
+        <!-- ユーザー情報 -->
+        <a href="{% url 'accounts:profile' post.user.pk %}" class="text-dark text-decoration-none">
+          <div class="d-flex align-items-center mb-1">
+          {% if post.user.profile.icon %}
+          <img src="{{ post.user.profile.icon.url }}"
+              class="rounded-circle me-2"
+              width="35"
+              height="35"
+              alt="{{ post.user.username }}">
+          {% else %}
+          <i class="bi bi-person-circle fs-2 me-2"></i>
+          {% endif %}
+          <span>{{ post.user.username }}</span>
+          </div>
+        </a>
         <!-- タイトル、テキスト -->
         <h5>{{ post.title }}</h5>
         <p>{{ post.text }}</p>
         <!-- 画像 -->
+        <div class="post-images 
+            {% if post.image1 and post.image2 and post.image3 and post.image4 %}
+              images-4
+            {% elif post.image1 and post.image2 and post.image3 %}
+              images-3
+            {% elif post.image1 and post.image2 %}
+              images-2
+            {% else %}
+              images-1
+            {% endif %}
+        ">
+          {% if post.image1 %}
+            <img src="{{ post.image1.url }}" alt="投稿画像1">
+          {% endif %}
+          {% if post.image2 %}
+            <img src="{{ post.image2.url }}" alt="投稿画像2">
+          {% endif %}
+          {% if post.image3 %}
+            <img src="{{ post.image3.url }}" alt="投稿画像3">
+          {% endif %}
+          {% if post.image4 %}
+            <img src="{{ post.image4.url }}" alt="投稿画像4">
+          {% endif %}
+        </div>
+        <!-- 選択肢画像 -->
         <div class="row g-2">
           <div class="col-6">
             {% if post.image_choice1 %}
@@ -55,18 +95,20 @@
         <!-- 投票 -->
         <!-- 投票済み -->
         {% if post.has_voted %}
-        <div class="row g-0 align-items-stretch">
-          <div class="col-6">
-            <div class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
-              {{ post.choice1 }}
-              {{ post.choice1_percent }}％
+        <div class="d-flex g-0 w-100">  
+            <div class="btn choice1-btn py-2 rounded-0 rounded-start" style="width: {{ post.choice1_percent }}% ; height: 25px;">
             </div>
+            <div class="btn choice2-btn btn-danger py-2 rounded-0 rounded-end" style="width: {{ post.choice2_percent }}% ; height: 25px;">
+            </div>
+        </div>
+        <div class="d-flex w-100 fw-bold">
+          <div class="w-50" style="color: #5B4AE6;">
+          {{ post.choice1 }}
+          <span>{{ post.choice1_percent }}％</span>
           </div>
-          <div class="col-6">
-            <div class="btn choice2-btn w-100 py-2 rounded-0 rounded-end">
-              {{ post.choice2 }}
-              {{ post.choice2_percent }}％
-            </div>
+          <div class="w-50 text-end" style="color: #E04F7F;">
+          {{ post.choice2 }}
+          <span>{{ post.choice2_percent }}％</span>
           </div>
         </div>
         <p class="mt-2">{{ post.total_vote }}票</p>
@@ -74,24 +116,30 @@
         {% else %}
         <form method="post" action="{% url 'vote' post.pk %}">
           {% csrf_token %}
-          <div class="row g-0 align-items-stretch">
+          <div class="row g-0">
             <div class="col-6">
-              <input type="hidden" name="next" value="detail">
               <button type="submit" 
                       name="choice"
                       value="1" 
-                      class="btn choice1-btn w-100 py-2 rounded-0 rounded-start">
-                {{ post.choice1 }}
+                      class="btn choice1-btn w-100 py-2 rounded-0 rounded-start"
+                      style="height: 25px;">
               </button>
             </div>
             <div class="col-6">
-              <input type="hidden" name="next" value="detail">
               <button type="submit"
                       name="choice"
                       value="2"
-                      class="btn choice2-btn w-100 py-2 rounded-0 rounded-end">
-                {{ post.choice2 }}
+                      class="btn choice2-btn btn-danger w-100 py-2 rounded-0 rounded-end"
+                      style="height: 25px;">
               </button>
+            </div>
+            <div class="d-flex w-100 fw-bold">
+              <div class="w-50" style="color: #5B4AE6;">
+              {{ post.choice1 }}
+              </div>
+              <div class="w-50 text-end" style="color: #E04F7F;">
+              {{ post.choice2 }}
+              </div>
             </div>
           </div>
         </form>
@@ -105,17 +153,19 @@
             {% csrf_token %}
             <input type="hidden" name="next" value="detail">
             <button type="submit" class="btn">
-              <i class="bi {% if post.has_liked %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
-              {{ post.like_set.count }}
-            </button>
+            <i class="bi {% if post.has_liked %}bi-heart-fill{% else %}bi-heart{% endif %}" 
+              {% if post.has_liked %}style="color: #F91880;"{% endif %}></i>
+            {{ post.like_set.count }}
+          </button>
           </form>
           <form method="post" action="{% url 'save' post.pk%}">
             {% csrf_token %}
             <input type="hidden" name="next" value="detail">
             <button type="submit" class="btn">
-              <i class="bi {% if post.has_saved %}bi-bookmark-fill{% else %}bi-bookmark{% endif %}"></i>
-              {{ post.saves.count }}
-            </button>
+            <i class="bi {% if post.has_saved %}bi-bookmark-fill{% else %}bi-bookmark{% endif %}"
+              {% if post.has_saved %}style="color: #5B4AE6;"{% endif %}></i>
+            {{ post.saves.count }}
+          </button>
           </form>
           <button type="button" class="btn">
             <i class="bi bi-box-arrow-up"></i>
